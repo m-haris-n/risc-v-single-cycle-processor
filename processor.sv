@@ -5,6 +5,7 @@ module processor
 ); 
     // wires
     logic        rf_en;
+    logic        sel_b;
     logic [31:0] pc_out;
     logic [31:0] inst;
     logic [ 4:0] rd;
@@ -15,6 +16,9 @@ module processor
     logic [ 6:0] funct7;
     logic [31:0] rdata1;
     logic [31:0] rdata2;
+    logic [31:0] opr_b;
+    logic [11:0] imm;
+    logic [31:0] imm_val;
     logic [31:0] wdata;
     logic [3 :0] aluop;
 
@@ -43,7 +47,8 @@ module processor
         .rd    ( rd             ),
         .opcode( opcode         ),
         .funct3( funct3         ),
-        .funct7( funct7         )
+        .funct7( funct7         ),
+        .imm   ( imm            )
     );
 
     // register file
@@ -59,6 +64,23 @@ module processor
         .wdata ( wdata          )
     );
 
+    // immediate generator
+    imm_gen imm_gen_i
+    (
+        .imm    ( imm ),
+        .funct3 ( funct3 ),
+        .imm_val( imm_val )
+    );
+
+    // sel_B_mux
+    sel_B_mux sel_B_mux_i
+    (
+        .rdata2 (rdata2),
+        .imm_val(imm_val),
+        .sel_b  (sel_b),
+        .opr_b  (opr_b)
+    );
+
     // controller
     controller controller_i
     (
@@ -66,7 +88,8 @@ module processor
         .funct3( funct3         ),
         .funct7( funct7         ),
         .aluop ( aluop          ),
-        .rf_en ( rf_en          )
+        .rf_en ( rf_en          ),
+        .sel_b ( sel_b          )
     );
 
     // alu
@@ -74,7 +97,7 @@ module processor
     (
         .aluop   ( aluop          ),
         .opr_a   ( rdata1         ),
-        .opr_b   ( rdata2         ),
+        .opr_b   ( opr_b          ),
         .opr_res ( wdata          )
     );
     
