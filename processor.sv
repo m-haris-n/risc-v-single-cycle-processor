@@ -1,8 +1,8 @@
-module processor 
+module processor
 (
     input logic clk,
     input logic rst
-); 
+);
     // wires
     logic        rf_en;
     logic        sel_b;
@@ -25,80 +25,90 @@ module processor
     // program counter
     pc pc_i
     (
-        .clk   ( clk            ),
-        .rst   ( rst            ),
-        .pc_in ( pc_out + 32'd4 ),
-        .pc_out( pc_out         )
+        .clk(clk),
+        .rst(rst),
+        .pc_in(pc_out + 32'd4),
+        .pc_out(pc_out)
     );
 
     // instruction memory
     inst_mem inst_mem_i
     (
-        .addr  ( pc_out         ),
-        .data  ( inst           )
+        .addr(pc_out),
+        .data(inst)
     );
 
     // instruction decoder
     inst_dec inst_dec_i
     (
-        .inst  ( inst           ),
-        .rs1   ( rs1            ),
-        .rs2   ( rs2            ),
-        .rd    ( rd             ),
-        .opcode( opcode         ),
-        .funct3( funct3         ),
-        .funct7( funct7         ),
-        .imm   ( imm            )
+        .inst(inst),
+        .rs1(rs1),
+        .rs2(rs2),
+        .rd(rd),
+        .opcode(opcode),
+        .funct3(funct3),
+        .funct7(funct7),
+        .imm(imm)
     );
 
     // register file
     reg_file reg_file_i
     (
-        .clk   ( clk            ),
-        .rf_en ( rf_en          ),
-        .rd    ( rd             ),
-        .rs1   ( rs1            ),
-        .rs2   ( rs2            ),
-        .rdata1( rdata1         ),
-        .rdata2( rdata2         ),
-        .wdata ( wdata          )
+        .clk(clk),
+        .rf_en(rf_en),
+        .rd(rd),
+        .rs1(rs1),
+        .rs2(rs2),
+        .rdata1(rdata1),
+        .rdata2(rdata2),
+        .wdata(wdata)
     );
 
     // immediate generator
     imm_gen imm_gen_i
     (
-        .imm    ( imm ),
-        .funct3 ( funct3 ),
-        .imm_val( imm_val )
+        .imm(imm),
+        .funct3(funct3),
+        .imm_val(imm_val)
     );
 
     // sel_B_mux
-    sel_B_mux sel_B_mux_i
+    // sel_B_mux sel_B_mux_i
+    // (
+    //     .rdata2(rdata2),
+    //     .imm_val(imm_val),
+    //     .sel_b(sel_b),
+    //     .opr_b(opr_b)
+    // );
+
+
+    //sel_b_mux for I-type
+    mux_2x1 mux_2x1_i
     (
-        .rdata2 (rdata2),
-        .imm_val(imm_val),
-        .sel_b  (sel_b),
-        .opr_b  (opr_b)
+        .sel(sel_b),
+        .input_a(rdata2),
+        .input_b(imm_val),
+        .out_y(opr_b)
     );
 
     // controller
     controller controller_i
     (
-        .opcode( opcode         ),
-        .funct3( funct3         ),
-        .funct7( funct7         ),
-        .aluop ( aluop          ),
-        .rf_en ( rf_en          ),
-        .sel_b ( sel_b          )
+        .opcode(opcode),
+        .funct3(funct3),
+        .funct7(funct7),
+        .aluop(aluop),
+        .rf_en(rf_en),
+        .sel_b(sel_b)
     );
 
     // alu
     alu alu_i
     (
-        .aluop   ( aluop          ),
-        .opr_a   ( rdata1         ),
-        .opr_b   ( opr_b          ),
-        .opr_res ( wdata          )
+        .aluop(aluop),
+        .opr_a(rdata1),
+        .opr_b(opr_b),
+        .opr_res(wdata)
     );
-    
+
 endmodule
