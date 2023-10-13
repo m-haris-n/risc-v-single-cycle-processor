@@ -23,9 +23,9 @@ module alu
     begin
         case(aluop)
             ADD:
-                opr_res = opr_a + opr_b; //ADD
+                opr_res = opr_a + opr_b; //Add
             SUB:
-                opr_res = opr_a - opr_b; //SUB
+                opr_res = opr_a - opr_b; //Subtract
             OR:
                 opr_res = opr_a | opr_b; //OR
             AND:
@@ -33,17 +33,17 @@ module alu
             XOR:
                 opr_res = opr_a ^ opr_b; //XOR
             SLL:
-                opr_res = opr_a << opr_b; //SLL
+                opr_res = opr_a << opr_b; //Shift Left Logical
             SRL:
-                opr_res = opr_a >> opr_b; //SRL
+                opr_res = opr_a >> opr_b; //Shift Right Logical
             SRA:
-                opr_res = opr_a >>> opr_b; //SRA
+                opr_res = opr_a >>> opr_b; //Shift Right Arithmetic
             SLT:
-                opr_res = ($signed(opr_a) < $signed(opr_b)) ? 1 : 0; //SLT
+                opr_res = ($signed(opr_a) < $signed(opr_b)) ? 1 : 0; //Set Less Than
             SLTU:
-                opr_res = (opr_a < opr_b) ? 1 : 0; //SLTU
+                opr_res = (opr_a < opr_b) ? 1 : 0; //Set Less Than Unsigned
             NULL:
-                opr_res = opr_b;  //PASS OPERAND 2
+                opr_res = opr_b;  //Pass Operand B
         endcase
     end
 

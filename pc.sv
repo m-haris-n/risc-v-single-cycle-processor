@@ -1,6 +1,6 @@
-// In RISC-V XLEN denotes the bits of CPU. XLEN=32 
+// In RISC-V XLEN denotes the bits of CPU. XLEN=32
 
-module pc 
+module pc
 (
     input  logic        clk,
     input  logic        rst,

@@ -6,17 +6,17 @@ module tb_processor();
     logic clk;
     logic rst;
 
-    processor dut 
+    processor dut
     (
         .clk ( clk ),
         .rst ( rst )
     );
 
     // clock generator
-    initial 
+    initial
     begin
         clk = 0;
-        forever 
+        forever
         begin
             #5 clk = ~clk;
         end
@@ -29,6 +29,7 @@ module tb_processor();
         #10;
         rst = 0;
         #1000;
+        $display("Processor is running");
         $finish;
     end
 

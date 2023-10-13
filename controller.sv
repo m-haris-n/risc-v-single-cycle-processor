@@ -8,6 +8,18 @@ module controller
     output logic       sel_b
 );
 
+
+    parameter RTYPE = 7'b0110011;
+    parameter ITYPEALO = 7'b0010011; // I type Arithmetic Logic Ops
+    parameter ITYPELOAD = 7'b0000011; // I type Arithmetic Logic Ops
+    parameter ITYPEJALR = 7'b1101111; // I type JALR
+    parameter STYPE = 7'b0100011; // I type JALR
+    parameter BTYPE = 7'b1100011; // I type JALR
+    parameter UTYPELUI = 7'b0110111; // I type JALR
+    parameter UTYPEAUIPC = 7'b0010111; // I type JALR
+    parameter JTYPE = 7'b0010111; // I type JALR
+
+
     // ALU OPS
     parameter ADD = 4'b0000;
     parameter SUB = 4'b0001;
@@ -24,7 +36,7 @@ module controller
     always_comb
     begin
         case(opcode)
-            7'b0110011: //R-Type
+         RTYPE: //R-Type
             begin
                 rf_en = 1'b1;
                 sel_b = 1'b0;
@@ -36,22 +48,22 @@ module controller
                             7'b0100000: aluop = SUB; //SUB
                         endcase
                     end
-                    3'b001: aluop = SLL; //SLL
-                    3'b010: aluop = SLT; //SLT
-                    3'b011: aluop = SLTU; //SLTU
+                    3'b001: aluop = SLL; //Shift Left Logical
+                    3'b010: aluop = SLT; //Set Less Than
+                    3'b011: aluop = SLTU; //Set Less Than Unsigned
                     3'b100: aluop = XOR; //XOR
                     3'b101:
                     begin
                         case(funct7)
-                            7'b0000000: aluop = SRL; //SRL
-                            7'b0100000: aluop = SRA; //SRA
+                            7'b0000000: aluop = SRL; //Shift Right Logical
+                            7'b0100000: aluop = SRA; //Shift Right Arithmetic
                         endcase
                     end
                     3'b110: aluop = OR; //OR
                     3'b111: aluop = AND; //AND
                 endcase
             end
-            7'b0010011: // I-type
+            ITYPEALO: // I-type Arithmetic Logic Ops
             begin
                 rf_en = 1'b1;
                 sel_b = 1'b1;
@@ -72,6 +84,77 @@ module controller
                 end
                 endcase
             end
+            // ITYPELOAD: // I-type Load
+            // begin
+            //     case (funct3)
+            //         3'b000: //load byte
+
+            //         3'b001: //load half word
+
+            //         3'b010: //load word
+
+            //         3'b100: //load byte unsigned
+
+            //         3'b101: //load half unsigned
+
+
+            //         default:
+            //     endcase
+            // end
+
+            // ITYPEJALR: //I-type (Jump And Link Return)
+            // begin
+
+            // end
+
+            // STYPE: //S-type
+            // begin
+            //     case (funct3)
+
+            //         3'b000: //store byte
+
+            //         3'b001: //store halfword
+
+            //         3'b010: //store word
+
+            //         default:
+            //     endcase
+            // end
+            // BTYPE: //B-type
+            // begin
+            //     case (funct3)
+            //         3'b000: // ==
+
+            //         3'b001: // !=
+
+            //         3'b100: // <
+
+            //         3'b101: // >=
+
+            //         3'b110: // < (unsigned)
+
+            //         3'b111: // >= (unsigned)
+
+
+            //         default:
+            //     endcase
+            // end
+
+            // UTYPELUI: //U-type (Load Upper Immediate)
+            // begin
+
+            // end
+
+            // UTYPEAUIPC: //U-type (Add Upper Immediate to Program Counter)
+            // begin
+
+            // end
+
+            // JTYPE: //J-type (Jump And Link)
+            // begin
+
+            // end
+
             default:
             begin
                 rf_en = 1'b0;

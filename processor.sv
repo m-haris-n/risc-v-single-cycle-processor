@@ -56,7 +56,7 @@ module processor
     (
         .clk(clk),
         .rf_en(rf_en),
-        .rd(rd),
+        .waddr(rd),
         .rs1(rs1),
         .rs2(rs2),
         .rdata1(rdata1),
@@ -72,24 +72,6 @@ module processor
         .imm_val(imm_val)
     );
 
-    // sel_B_mux
-    // sel_B_mux sel_B_mux_i
-    // (
-    //     .rdata2(rdata2),
-    //     .imm_val(imm_val),
-    //     .sel_b(sel_b),
-    //     .opr_b(opr_b)
-    // );
-
-
-    //sel_b_mux for I-type
-    mux_2x1 mux_2x1_i
-    (
-        .sel(sel_b),
-        .input_a(rdata2),
-        .input_b(imm_val),
-        .out_y(opr_b)
-    );
 
     // controller
     controller controller_i
@@ -109,6 +91,18 @@ module processor
         .opr_a(rdata1),
         .opr_b(opr_b),
         .opr_res(wdata)
+    );
+
+
+    //ALL MUX
+
+    //sel_b_mux for I-type
+    mux_2x1 sel_b_mux
+    (
+        .sel(sel_b),
+        .input_a(rdata2),
+        .input_b(imm_val),
+        .out_y(opr_b)
     );
 
 endmodule
