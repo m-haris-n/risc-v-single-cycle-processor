@@ -6,9 +6,9 @@ module inst_dec
     output logic [ 2:0] funct3,
     output logic [ 4:0] rs1,
     output logic [ 4:0] rs2,
-    output logic [ 6:0] funct7,
-    output logic [11:0] imm
+    output logic [ 6:0] funct7
 );
+
     assign opcode = inst[ 6: 0];
     assign rd     = inst[11: 7];
     assign funct3 = inst[14:12];
@@ -16,8 +16,5 @@ module inst_dec
     assign rs2    = inst[24:20];
     assign funct7 = inst[31:25];
 
-
-    // to immediate generator
-    assign imm    = inst[31:20];
 
 endmodule

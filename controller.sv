@@ -5,7 +5,13 @@ module controller
     input  logic [2:0] funct3,
     output logic [3:0] aluop,
     output logic       rf_en,
-    output logic       sel_b
+    //selection of operand B in ALU
+    output logic       sel_b,
+    output logic       sel_wb,
+    //data memory signals
+    output logic       rd_en,
+    output logic       wr_en,
+    output logic [2:0] mem_mode
 );
 
 
@@ -13,11 +19,11 @@ module controller
     parameter ITYPEALO = 7'b0010011; // I type Arithmetic Logic Ops
     parameter ITYPELOAD = 7'b0000011; // I type Arithmetic Logic Ops
     parameter ITYPEJALR = 7'b1101111; // I type JALR
-    parameter STYPE = 7'b0100011; // I type JALR
-    parameter BTYPE = 7'b1100011; // I type JALR
-    parameter UTYPELUI = 7'b0110111; // I type JALR
-    parameter UTYPEAUIPC = 7'b0010111; // I type JALR
-    parameter JTYPE = 7'b0010111; // I type JALR
+    parameter STYPE = 7'b0100011; // S-type
+    parameter BTYPE = 7'b1100011; // B-type
+    parameter UTYPELUI = 7'b0110111; // U-type LUI
+    parameter UTYPEAUIPC = 7'b0010111; // U-type AUIPC
+    parameter JTYPE = 7'b0010111; // J-Type
 
 
     // ALU OPS
@@ -67,6 +73,7 @@ module controller
             begin
                 rf_en = 1'b1;
                 sel_b = 1'b1;
+                sel_wb = 1'b0;
                 case (funct3)
                 3'b000: aluop = ADD; //ADDI
                 3'b010: aluop = SLT; //SLTI
@@ -84,23 +91,32 @@ module controller
                 end
                 endcase
             end
-            // ITYPELOAD: // I-type Load
-            // begin
-            //     case (funct3)
-            //         3'b000: //load byte
+            ITYPELOAD: // I-type Load
 
-            //         3'b001: //load half word
+            begin
+                rf_en = 1'b1;
+                sel_b = 1'b1;
+                sel_wb = 1'b1;
+                rd_en = 1;
+                wr_en = 0;
+                aluop = ADD;
+                case (funct3)
+                    3'b000: //load byte
+                        mem_mode = 3'b000;
+                    3'b001: //load half word
+                        mem_mode = 3'b001;
 
-            //         3'b010: //load word
+                    3'b010: //load word
+                        mem_mode = 3'b010;
 
-            //         3'b100: //load byte unsigned
+                    3'b100: //load byte unsigned
+                        mem_mode = 3'b011;
 
-            //         3'b101: //load half unsigned
+                    3'b101: //load half unsigned
+                        mem_mode = 3'b100;
 
-
-            //         default:
-            //     endcase
-            // end
+                endcase
+            end
 
             // ITYPEJALR: //I-type (Jump And Link Return)
             // begin

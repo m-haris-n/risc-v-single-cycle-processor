@@ -1,30 +1,40 @@
 module data_mem (
-    input logic wr_en,
-    input logic rd_en,
+    input logic clk, wr_en, rd_en,
     input logic [31:0] addr,
-    input logic [7:0] byte_input,
-    input logic [15:0] halfword_input,
-    input logic [31:0] word_input,
-    input logic [63:0] doubleword_input,
+    input logic [2:0] mem_mode,
     output logic [31:0] out_data
 );
 
-    logic [31:0] datamem [100];
+    parameter BYTE = 3'b000;
+    parameter HALFWORD = 3'b001;
+    parameter WORD = 3'b010;
+    parameter UBYTE = 3'b011;
+    parameter UHALFWORD = 3'b100;
 
+
+    logic [7:0] data_mem [100];
+
+
+    //ASYNC READ
     always_comb
     begin
-        // case(wr_en)
+        if(rd_en)
+        begin
 
-        // 0:
-        //     case(rd_en)
-        //     0:
-        //         out_data = datamem[addr] //zero extension
-        //     1:
-        //         out_data = datamem[addr] // sign extension
-        //     endcase
-        // 1:
+        case(mem_mode)
+            BYTE:
+                out_data = $signed(data_mem[addr]);
+            HALFWORD:
+                out_data = $signed({data_mem[addr+1], data_mem[addr]});
+            WORD:
+                out_data = $signed({data_mem[addr+3], data_mem[addr+2], data_mem[addr+1], data_mem[addr]});
+            UBYTE:
+                out_data = {24'b0,{data_mem[addr]}};
+            UHALFWORD:
+                out_data = {16'b0,{data_mem[addr]}};
+	    endcase
+        end
 
-        // endcase
     end
 
 
