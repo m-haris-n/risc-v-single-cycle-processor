@@ -14,7 +14,7 @@ module controller
     output logic       wr_en,
     output logic [2:0] mem_mode,
     output logic [2:0] br_type,
-    output logic jump
+    output logic       jump
 );
 
 
@@ -47,10 +47,12 @@ module controller
         case(opcode)
          RTYPE: //R-Type
             begin
-                $display("R-type running");
                 rf_en = 1'b1;
                 sel_b = 1'b0;
+                sel_a = 1'b0;
                 sel_wb = 2'b00;
+                jump = 0;
+                br_type = 010;
                 case(funct3)
                     3'b000:
                     begin
@@ -76,11 +78,12 @@ module controller
             end
             ITYPEALO: // I-type Arithmetic Logic Ops
             begin
-                $display("I-type ALOps running");
-
                 rf_en = 1'b1;
                 sel_b = 1'b1;
+                sel_a = 1'b0;
                 sel_wb = 2'b00;
+                br_type = 010;
+                jump = 0;
                 case (funct3)
                 3'b000: aluop = ADD; //ADDI
                 3'b010: aluop = SLT; //SLTI
@@ -101,11 +104,14 @@ module controller
             ITYPELOAD: // I-type Load
 
             begin
+                br_type = 010;
                 rf_en = 1'b1;
+                sel_a = 0;
                 sel_b = 1'b1;
                 sel_wb = 2'b01;
                 rd_en = 1;
                 wr_en = 0;
+                jump = 0;
                 aluop = ADD;
                 case (funct3)
                     3'b000: //load byte
@@ -133,15 +139,19 @@ module controller
                 sel_a = 0;
                 sel_wb = 2'b10;
                 jump = 1;
+                br_type = 010;
             end
 
             STYPE: //S-type
             begin
                 aluop = ADD;
+                sel_a = 0;
                 sel_b = 1;
                 rf_en = 0;
                 rd_en = 0;
                 wr_en = 1;
+                jump = 0;
+                br_type = 010;
                 case (funct3)
 
                     3'b000: //store byte
@@ -157,6 +167,7 @@ module controller
             begin
                 sel_a = 1;
                 sel_b = 1;
+                rf_en = 0;
                 aluop = ADD;
                 br_type = funct3;
                 // case (funct3)
@@ -183,6 +194,8 @@ module controller
                 aluop = NULL;
                 sel_b = 1;
                 sel_wb = 2'b00;
+                jump = 0;
+                br_type = 010;
 
             end
 
@@ -193,6 +206,8 @@ module controller
                 sel_a = 1;
                 sel_b = 1;
                 sel_wb = 2'b00;
+                jump = 0;
+                br_type = 010;
             end
 
             JTYPE: //J-type (Jump And Link)
@@ -203,6 +218,7 @@ module controller
                 sel_a = 1;
                 sel_wb = 2'b10;
                 jump = 1;
+                br_type = 010;
             end
 
             default:

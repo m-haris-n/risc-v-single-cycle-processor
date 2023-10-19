@@ -5,6 +5,7 @@ module branch_cond (
     output logic br_taken
 );
 
+    parameter DEFAULT_CASE = 3'b010;
     parameter EQUAL = 3'b000;
     parameter NOTEQUAL = 3'b001;
     parameter LESSTHAN = 3'b100;
@@ -27,6 +28,8 @@ module branch_cond (
                 br_taken = $unsigned(rdata1) < $unsigned(rdata2) ? 1 : 0;
             UGREATEREQ:
                 br_taken = $unsigned(rdata1) >= $unsigned(rdata2) ? 1 : 0;
+            DEFAULT_CASE:
+            br_taken = 0;
         endcase
     end
 

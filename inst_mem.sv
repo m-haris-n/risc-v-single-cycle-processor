@@ -1,4 +1,4 @@
-module inst_mem 
+module inst_mem
 (
     input  logic [31:0] addr,
     output logic [31:0] data
@@ -8,7 +8,9 @@ module inst_mem
 
     always_comb
     begin
+        $display("pc:%b", addr);
+        $display("inst:%b \n", mem[addr[31:2]]);
         data = mem[addr[31:2]];
     end
-    
+
 endmodule

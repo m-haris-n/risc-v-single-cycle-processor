@@ -21,6 +21,7 @@ module processor
     logic [ 6:0] funct7;
     logic [31:0] rdata1;
     logic [31:0] rdata2;
+    logic [31:0] opr_a;
     logic [31:0] opr_b;
     logic [31:0] imm;
     logic [31:0] wdata;
@@ -115,7 +116,7 @@ module processor
     alu alu_i
     (
         .aluop(aluop),
-        .opr_a(rdata1),
+        .opr_a(opr_a),
         .opr_b(opr_b),
         .opr_res(alu_out)
     );
