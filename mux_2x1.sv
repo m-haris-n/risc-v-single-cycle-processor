@@ -8,6 +8,7 @@ module mux_2x1(
 		case(sel)
 		1'd0: out_y = input_a;
 		1'd1: out_y = input_b;
+		default: out_y = input_a;
 		endcase
 	end
 endmodule

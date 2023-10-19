@@ -24,7 +24,10 @@ module reg_file
     begin
         if(rf_en)
         begin
-            reg_mem[waddr] <= wdata;
+            if(waddr != 5'b00000)
+            begin
+                reg_mem[waddr] <= wdata;
+            end
         end
     end
 

@@ -7,11 +7,14 @@ module controller
     output logic       rf_en,
     //selection of operand B in ALU
     output logic       sel_b,
-    output logic       sel_wb,
+    output logic       sel_a,
+    output logic [1:0] sel_wb,
     //data memory signals
     output logic       rd_en,
     output logic       wr_en,
-    output logic [2:0] mem_mode
+    output logic [2:0] mem_mode,
+    output logic [2:0] br_type,
+    output logic jump
 );
 
 
@@ -44,8 +47,10 @@ module controller
         case(opcode)
          RTYPE: //R-Type
             begin
+                $display("R-type running");
                 rf_en = 1'b1;
                 sel_b = 1'b0;
+                sel_wb = 2'b00;
                 case(funct3)
                     3'b000:
                     begin
@@ -71,9 +76,11 @@ module controller
             end
             ITYPEALO: // I-type Arithmetic Logic Ops
             begin
+                $display("I-type ALOps running");
+
                 rf_en = 1'b1;
                 sel_b = 1'b1;
-                sel_wb = 1'b0;
+                sel_wb = 2'b00;
                 case (funct3)
                 3'b000: aluop = ADD; //ADDI
                 3'b010: aluop = SLT; //SLTI
@@ -96,7 +103,7 @@ module controller
             begin
                 rf_en = 1'b1;
                 sel_b = 1'b1;
-                sel_wb = 1'b1;
+                sel_wb = 2'b01;
                 rd_en = 1;
                 wr_en = 0;
                 aluop = ADD;
@@ -118,58 +125,85 @@ module controller
                 endcase
             end
 
-            // ITYPEJALR: //I-type (Jump And Link Return)
-            // begin
+            ITYPEJALR: //I-type (Jump And Link Return)
+            begin
+                rf_en = 1;
+                aluop = ADD;
+                sel_b = 1;
+                sel_a = 0;
+                sel_wb = 2'b10;
+                jump = 1;
+            end
 
-            // end
+            STYPE: //S-type
+            begin
+                aluop = ADD;
+                sel_b = 1;
+                rf_en = 0;
+                rd_en = 0;
+                wr_en = 1;
+                case (funct3)
 
-            // STYPE: //S-type
-            // begin
-            //     case (funct3)
+                    3'b000: //store byte
+                        mem_mode = 3'b000;
+                    3'b001: //store halfword
+                        mem_mode = 3'b001;
+                    3'b010: //store word
+                        mem_mode = 3'b010;
 
-            //         3'b000: //store byte
+                endcase
+            end
+            BTYPE: //B-type
+            begin
+                sel_a = 1;
+                sel_b = 1;
+                aluop = ADD;
+                br_type = funct3;
+                // case (funct3)
+                //     3'b000: // ==
+                //         br_type = 3'b000;
+                //     3'b001: // !=
+                //         br_type = 3'b001;
+                //     3'b100: // <
+                //         br_type = 3'b100;
+                //     3'b101: // >=
+                //         br_type = 3'b101;
+                //     3'b110: // < (unsigned)
+                //         br_type = 3'b110;
+                //     3'b111: // >= (unsigned)
+                //         br_type = 3'b111;
 
-            //         3'b001: //store halfword
+                //     default:
+                // endcase
+            end
 
-            //         3'b010: //store word
+            UTYPELUI: //U-type (Load Upper Immediate)
+            begin
+                rf_en = 1;
+                aluop = NULL;
+                sel_b = 1;
+                sel_wb = 2'b00;
 
-            //         default:
-            //     endcase
-            // end
-            // BTYPE: //B-type
-            // begin
-            //     case (funct3)
-            //         3'b000: // ==
+            end
 
-            //         3'b001: // !=
+            UTYPEAUIPC: //U-type (Add Upper Immediate to Program Counter)
+            begin
+                rf_en = 1;
+                aluop = ADD;
+                sel_a = 1;
+                sel_b = 1;
+                sel_wb = 2'b00;
+            end
 
-            //         3'b100: // <
-
-            //         3'b101: // >=
-
-            //         3'b110: // < (unsigned)
-
-            //         3'b111: // >= (unsigned)
-
-
-            //         default:
-            //     endcase
-            // end
-
-            // UTYPELUI: //U-type (Load Upper Immediate)
-            // begin
-
-            // end
-
-            // UTYPEAUIPC: //U-type (Add Upper Immediate to Program Counter)
-            // begin
-
-            // end
-
-            // JTYPE: //J-type (Jump And Link)
-            // begin
-
-            // end
+            JTYPE: //J-type (Jump And Link)
+            begin
+                rf_en = 1;
+                aluop = ADD;
+                sel_b = 1;
+                sel_a = 1;
+                sel_wb = 2'b10;
+                jump = 1;
+            end
 
             default:
             begin

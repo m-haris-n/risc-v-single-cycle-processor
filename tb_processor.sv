@@ -28,8 +28,22 @@ module tb_processor();
         rst = 1;
         #10;
         rst = 0;
+        $display("inst0: %b", dut.inst_mem_i.mem[0]);
+        $display("inst1: %b", dut.inst_mem_i.mem[1]);
+        $display("inst2: %b", dut.inst_mem_i.mem[2]);
+        $display("pc: %b", dut.pc_out);
+        #5
+        $display("pc+4: %b", dut.pc_out);
+        #5
+        $display("pc+8: %b", dut.pc_out);
+        #5
+        $display("pc+8: %b", dut.pc_out);
+
         #1000;
         $display("Processor is running");
+        $display("x1: %b", dut.reg_file_i.reg_mem[1]);
+        $display("x2: %b", dut.reg_file_i.reg_mem[2]);
+        $display("x1+x2-> x3: %b", dut.reg_file_i.reg_mem[3]);
         $finish;
     end
 
