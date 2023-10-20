@@ -40,6 +40,8 @@ module tb_processor();
         $display("x2: %b", dut.reg_file_i.reg_mem[2]);
         $display("x1+x2-> x3: %b", dut.reg_file_i.reg_mem[3]);
         $display("loaded in x4: %b", dut.reg_file_i.reg_mem[4]);
+        $display("loaded UI in x5: %b", dut.reg_file_i.reg_mem[5]);
+        $display("loaded UI in x6: %b", dut.reg_file_i.reg_mem[6]);
         $finish;
     end
 
