@@ -21,12 +21,12 @@ module controller
     parameter RTYPE = 7'b0110011;
     parameter ITYPEALO = 7'b0010011; // I type Arithmetic Logic Ops
     parameter ITYPELOAD = 7'b0000011; // I type Arithmetic Logic Ops
-    parameter ITYPEJALR = 7'b1101111; // I type JALR
+    parameter ITYPEJALR = 7'b1100111; // I type JALR
     parameter STYPE = 7'b0100011; // S-type
     parameter BTYPE = 7'b1100011; // B-type
     parameter UTYPELUI = 7'b0110111; // U-type LUI
     parameter UTYPEAUIPC = 7'b0010111; // U-type AUIPC
-    parameter JTYPE = 7'b0010111; // J-Type
+    parameter JTYPE = 7'b1101111; // J-Type
 
 
     // ALU OPS
@@ -212,11 +212,12 @@ module controller
 
             JTYPE: //J-type (Jump And Link)
             begin
+                $display("JAL\n");
+                sel_wb = 2'b10;
                 rf_en = 1;
                 aluop = ADD;
                 sel_b = 1;
                 sel_a = 1;
-                sel_wb = 2'b10;
                 jump = 1;
                 br_type = 010;
             end

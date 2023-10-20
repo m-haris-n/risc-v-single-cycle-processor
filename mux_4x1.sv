@@ -6,10 +6,11 @@ module mux_4x1(
 	always_comb
 	begin
 		case(sel)
-		0: out_y = input_a;
-		1: out_y = input_b;
-		10: out_y = input_c;
-		11: out_y = input_d;
+		2'b00: out_y = input_a;
+		2'b01: out_y = input_b;
+		2'b10: out_y = input_c;
+		2'b11: out_y = input_d;
+		default: out_y = input_a;
 		endcase
 	end
 endmodule

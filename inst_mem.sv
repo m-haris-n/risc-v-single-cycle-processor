@@ -8,8 +8,8 @@ module inst_mem
 
     always_comb
     begin
-        $display("pc:%b", addr);
-        $display("inst:%b \n", mem[addr[31:2]]);
+        // $display("pc:%b", addr);
+        // $display("inst:%b", mem[addr[31:2]]);
         data = mem[addr[31:2]];
     end
 
