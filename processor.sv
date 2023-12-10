@@ -10,8 +10,19 @@ module processor
     logic [1:0]  sel_wb;
     logic        rd_en;
     logic        wr_en;
+
+    logic         csr_wr;
+    logic         csr_rd;
+    logic         t_intr;
+    logic         e_intr;
+    logic         is_mret;
+    logic         intr_flag;
+    logic         csr_op_sel;
+
     logic [31:0] pc_in;
     logic [31:0] pc_out;
+    logic [31:0] epc;
+    logic [31:0] selected_pc;
     logic [31:0] inst;
     logic [ 4:0] rd;
     logic [ 4:0] rs1;
@@ -27,6 +38,8 @@ module processor
     logic [31:0] wdata;
     logic [31:0] alu_out;
     logic [31:0] data_mem_out;
+    logic [31:0] csr_data_out;
+
     logic [3 :0] aluop;
     logic [2:0] mem_mode;
     logic [2:0] br_type;
@@ -38,7 +51,7 @@ module processor
     (
         .clk(clk),
         .rst(rst),
-        .pc_in(pc_in),
+        .pc_in(selected_pc),
         .pc_out(pc_out)
     );
 
@@ -109,7 +122,12 @@ module processor
         .wr_en(wr_en),
         .mem_mode(mem_mode),
         .br_type(br_type),
-        .jump(jump)
+        .jump(jump),
+        .csr_rd(csr_rd),
+        .csr_wr(csr_wr),
+        .is_mret(is_mret),
+        .csr_op_sel(csr_op_sel)
+
     );
 
     // alu
@@ -132,6 +150,25 @@ module processor
     );
 
 
+    //csr
+    csr_reg csr_reg_i
+    (
+        .clk(clk),
+        .rst(rst),
+        .pc_input(pc_in),
+        .addr(alu_out),
+        .wdata(csr_op),
+        .inst(inst),
+        .csr_rd(csr_rd),
+        .csr_wr(csr_wr),
+        .t_intr(t_intr),
+        .e_intr(e_intr),
+        .is_mret(is_mret),
+        .rdata(csr_data_out),
+        .epc(epc),
+        .intr_flag(intr_flag)
+    );
+
     //ALL MUX
 
     //sel_a_mux
@@ -152,6 +189,15 @@ module processor
         .out_y(opr_b)
     );
 
+    //csr operand selection mux
+    mux_2x1 sel_csr_op
+    (
+        .sel(csr_op_sel),
+        .input_a(rdata1),
+        .input_b(imm),
+        .out_y(csr_op)
+    );
+
     //write back selection for load instructions
     mux_4x1 sel_wb_mux
     (
@@ -159,7 +205,7 @@ module processor
         .input_a(alu_out),
         .input_b(data_mem_out),
         .input_c(pc_out+4),
-        .input_d(32'b0),
+        .input_d(csr_data_out),
         .out_y(wdata)
     );
 
@@ -171,6 +217,12 @@ module processor
         .out_y(pc_in)
     );
 
-
+    mux_2x1 pc_final_sel
+    (
+        .sel(intr_flag),
+        .input_a(pc_in),
+        .input_b(epc),
+        .out_y(selected_pc)
+    );
 
 endmodule

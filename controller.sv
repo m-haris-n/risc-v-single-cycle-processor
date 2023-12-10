@@ -14,7 +14,12 @@ module controller
     output logic       wr_en,
     output logic [2:0] mem_mode,
     output logic [2:0] br_type,
-    output logic       jump
+    output logic       jump,
+    //csr signals
+    output logic       is_mret,
+    output logic       csr_rd,
+    output logic       csr_wr,
+    output logic       csr_op_sel
 );
 
 
@@ -27,6 +32,7 @@ module controller
     parameter UTYPELUI = 7'b0110111; // U-type LUI
     parameter UTYPEAUIPC = 7'b0010111; // U-type AUIPC
     parameter JTYPE = 7'b1101111; // J-Type
+    parameter CSRI = 7'b111011;
 
 
     // ALU OPS
@@ -226,6 +232,45 @@ module controller
             begin
                 rf_en = 1'b0;
                 sel_b = 1'b0;
+            end
+            CSRI:
+            begin
+                case (funct3)
+                    3'b000: // MRET
+                    begin
+                        rf_en = 1'b0;
+                        sel_a = 1'b1;
+                        sel_b = 1'b0;
+                        rd_en = 1'b0;
+                        sel_wb = 2'b01;
+                        wr_en = 1'b0;
+                        mem_mode = 3'b111;
+                        br_type = 3'b010;
+                        csr_rd = 1'b0;
+                        csr_wr = 1'b0;
+                        is_mret = 1'b1;
+                    end
+                    3'b001: //CSRRW
+                    begin
+                        rf_en = 1'b1;
+                        sel_a = 1'b1;
+                        sel_b = 1'b0;
+                        rd_en = 1'b0;
+                        sel_wb = 2'b11;
+                        wr_en = 1'b0;
+                        mem_mode = 3'b111;
+                        br_type = 3'b010;
+                        csr_rd = 1'b1;
+                        csr_wr = 1'b1;
+                        is_mret = 1'b0;
+                    end
+                    // 3'b010: //CSRRS
+                    // 3'b011: //CSRRC
+                    // 3'b101: //CSRRWI
+                    // 3'b110: //CSRRSI
+                    // 3'b111: //CSRRCI
+                    // default:
+                endcase
             end
         endcase
     end
