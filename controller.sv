@@ -19,7 +19,12 @@ module controller
     output logic       is_mret,
     output logic       csr_rd,
     output logic       csr_wr,
-    output logic       csr_op_sel
+    output logic       csr_op_sel,
+
+    //custom
+    output logic       sel_laddr,
+    output logic       wd2_en
+
 );
 
 
@@ -33,6 +38,10 @@ module controller
     parameter UTYPEAUIPC = 7'b0010111; // U-type AUIPC
     parameter JTYPE = 7'b1101111; // J-Type
     parameter CSRI = 7'b111011;
+
+    //custom
+    parameter LWPOSTIN = 7'b0101011;
+
 
 
     // ALU OPS
@@ -53,6 +62,7 @@ module controller
         case(opcode)
          RTYPE: //R-Type
             begin
+                sel_laddr = 0;
                 rf_en = 1'b1;
                 sel_b = 1'b0;
                 sel_a = 1'b0;
@@ -84,6 +94,7 @@ module controller
             end
             ITYPEALO: // I-type Arithmetic Logic Ops
             begin
+                sel_laddr = 0;
                 rf_en = 1'b1;
                 sel_b = 1'b1;
                 sel_a = 1'b0;
@@ -110,6 +121,7 @@ module controller
             ITYPELOAD: // I-type Load
 
             begin
+                sel_laddr = 0;
                 br_type = 010;
                 rf_en = 1'b1;
                 sel_a = 0;
@@ -139,6 +151,7 @@ module controller
 
             ITYPEJALR: //I-type (Jump And Link Return)
             begin
+                sel_laddr = 0;
                 rf_en = 1;
                 aluop = ADD;
                 sel_b = 1;
@@ -150,6 +163,7 @@ module controller
 
             STYPE: //S-type
             begin
+                sel_laddr = 0;
                 aluop = ADD;
                 sel_a = 0;
                 sel_b = 1;
@@ -171,6 +185,7 @@ module controller
             end
             BTYPE: //B-type
             begin
+                sel_laddr = 0;
                 sel_a = 1;
                 sel_b = 1;
                 rf_en = 0;
@@ -196,6 +211,7 @@ module controller
 
             UTYPELUI: //U-type (Load Upper Immediate)
             begin
+                sel_laddr = 0;
                 rf_en = 1;
                 aluop = NULL;
                 sel_b = 1;
@@ -207,6 +223,7 @@ module controller
 
             UTYPEAUIPC: //U-type (Add Upper Immediate to Program Counter)
             begin
+                sel_laddr = 0;
                 rf_en = 1;
                 aluop = ADD;
                 sel_a = 1;
@@ -218,6 +235,7 @@ module controller
 
             JTYPE: //J-type (Jump And Link)
             begin
+                sel_laddr = 0;
                 $display("JAL\n");
                 sel_wb = 2'b10;
                 rf_en = 1;
@@ -235,6 +253,7 @@ module controller
             end
             CSRI:
             begin
+                sel_laddr = 0;
                 case (funct3)
                     3'b000: // MRET
                     begin
@@ -272,7 +291,30 @@ module controller
                     // default:
                 endcase
             end
+
+
+/// --- CUSTOM INSTRUCTIONS ---
+            //load word post increment
+            LWPOSTIN:
+            begin
+                br_type = 010;
+
+                rf_en = 1'b1;
+                wd2_en = 1;
+                sel_a = 0;
+                sel_b = 1'b1;
+
+                mem_mode = 3'b010;
+                sel_laddr = 1;
+                sel_wb = 2'b01;
+
+                rd_en = 1;
+                wr_en = 0;
+                jump = 0;
+                aluop = ADD;
+            end
         endcase
     end
+
 
 endmodule

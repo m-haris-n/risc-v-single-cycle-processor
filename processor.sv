@@ -19,6 +19,11 @@ module processor
     logic         intr_flag;
     logic         csr_op_sel;
 
+    //custom
+    logic         sel_laddr;
+    logic         wd2_en;
+    logic [31:0] laddr;
+
     logic [31:0] pc_in;
     logic [31:0] pc_out;
     logic [31:0] epc;
@@ -46,6 +51,34 @@ module processor
     logic br_taken;
     logic jump;
 
+
+
+    // controller
+    controller controller_i
+    (
+        .opcode(opcode),
+        .funct3(funct3),
+        .funct7(funct7),
+        .aluop(aluop),
+        .rf_en(rf_en),
+        .sel_a(sel_a),
+        .sel_b(sel_b),
+        .sel_wb(sel_wb),
+        .rd_en(rd_en),
+        .wr_en(wr_en),
+        .mem_mode(mem_mode),
+        .br_type(br_type),
+        .jump(jump),
+        .csr_rd(csr_rd),
+        .csr_wr(csr_wr),
+        .is_mret(is_mret),
+        .csr_op_sel(csr_op_sel),
+        .sel_laddr(sel_laddr),
+        .wd2_en(wd2_en)
+
+
+    );
+
     // program counter
     pc pc_i
     (
@@ -67,7 +100,7 @@ module processor
         .clk(clk),
         .rd_en(rd_en),
         .wr_en(wr_en),
-        .addr(alu_out),
+        .addr(laddr),
         .wdata(rdata2),
         .mem_mode(mem_mode),
         .out_data(data_mem_out)
@@ -102,33 +135,16 @@ module processor
         .rs2(rs2),
         .rdata1(rdata1),
         .rdata2(rdata2),
-        .wdata(wdata)
-    );
-
-
-
-    // controller
-    controller controller_i
-    (
-        .opcode(opcode),
-        .funct3(funct3),
-        .funct7(funct7),
-        .aluop(aluop),
-        .rf_en(rf_en),
-        .sel_a(sel_a),
-        .sel_b(sel_b),
-        .sel_wb(sel_wb),
-        .rd_en(rd_en),
-        .wr_en(wr_en),
-        .mem_mode(mem_mode),
-        .br_type(br_type),
-        .jump(jump),
-        .csr_rd(csr_rd),
-        .csr_wr(csr_wr),
-        .is_mret(is_mret),
-        .csr_op_sel(csr_op_sel)
+        .wdata(wdata),
+        //custom
+        .wd2_en(wd2_en),
+        .wdata2(alu_out)
 
     );
+
+
+
+
 
     // alu
     alu alu_i
@@ -196,6 +212,16 @@ module processor
         .input_a(rdata1),
         .input_b(imm),
         .out_y(csr_op)
+    );
+
+
+    //selection of address for loading from data mem
+    mux_2x1 sel_laddr_mux
+    (
+        .sel(sel_laddr),
+        .input_a(alu_out),
+        .input_b(rdata1),
+        .out_y(laddr)
     );
 
     //write back selection for load instructions
