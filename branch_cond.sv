@@ -30,6 +30,8 @@ module branch_cond (
                 br_taken = $unsigned(rdata1) >= $unsigned(rdata2) ? 1 : 0;
             DEFAULT_CASE:
             br_taken = 0;
+            default:
+            br_taken = 0;
         endcase
     end
 

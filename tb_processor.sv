@@ -21,23 +21,26 @@ module tb_processor();
             #5 clk = 1;
             #5 clk = 0;
             // $display("pc_in: %b", dut.pc_in);
-            $display("pc_d: %b", dut.pc_out_d);
+            $display("pc_d: %b", dut.selected_pc);
+            $display("instW: %b", dut.inst_W);
+            $display("instM: %b", dut.inst_M);
+            $display("instE: %b", dut.inst_E);
+            $display("instD: %b", dut.inst_d);
+            $display("instF: %b", dut.inst_f);
 
 
-            // $display("oprA:%b", dut.alu_i.opr_a);
-		    // $display("oprB:%b", dut.alu_i.opr_b);
-		    $display("alu_out:%b", dut.BUFFER_EM_i.alu_out_M);
+            $display("oprA:%b", dut.alu_i.opr_a);
+		    $display("oprB:%b", dut.alu_i.opr_b);
+		    $display("alu_out:%b", dut.alu_out_W);
 		    $display("wdata:%b", dut.reg_file_i.wdata);
-		    $display("waddr:%b\n", dut.reg_file_i.waddr);
-		    $display("datamem:%b", dut.data_mem_i.data_mem[0]);
-		    $display("datamem:%b", dut.data_mem_i.data_mem[1]);
-		    $display("datamem:%b", dut.data_mem_i.data_mem[2]);
-		    $display("datamem:%b", dut.data_mem_i.data_mem[3]);
-		    $display("datamemout:%b", dut.data_mem_i.out_data);
-		    $display("wb_selected:%b", dut.sel_wb_mux.sel);
-		    $display("\n");
-            // $display("pc_sel_br:%b", dut.br_taken);
-		    // $display("pc_sel_j:%b\n", dut.jump);
+		    $display("waddr:%b", dut.reg_file_i.waddr);
+		    $display("datamem:%b %b %b %b", dut.data_mem_i.data_mem[0], dut.data_mem_i.data_mem[1], dut.data_mem_i.data_mem[2], dut.data_mem_i.data_mem[3]);
+
+		    $display("datamemoutW:%b", dut.data_mem_out_W);
+		    $display("wb_selected:%b", dut.sel_wb_W);
+		    $display("");
+            $display("pc_sel_br:%b", dut.br_taken);
+		    $display("pc_sel_j:%b\n", dut.jump_E);
         end
     end
 
@@ -47,12 +50,13 @@ module tb_processor();
         rst = 1;
         #10;
         rst = 0;
-        #150;
-		    $display("datamem:%b\n", dut.data_mem_i.data_mem[0]);
+        #200;
+		$display("datamem:%b\n", dut.data_mem_i.data_mem[0]);
         $display("Processor is running");
         $display("x1: %b", dut.reg_file_i.reg_mem[1]);
         $display("x2: %b", dut.reg_file_i.reg_mem[2]);
         $display("x3: %b", dut.reg_file_i.reg_mem[3]);
+        $display("x4: %b", dut.reg_file_i.reg_mem[4]);
         // $display("loaded in x4: %b", dut.reg_file_i.reg_mem[4]);
         // $display("JAL return address x5: %b", dut.reg_file_i.reg_mem[5]);
         // $display("loaded UI in x6: %b", dut.reg_file_i.reg_mem[6]);
